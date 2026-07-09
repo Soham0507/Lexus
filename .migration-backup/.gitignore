@@ -1,0 +1,10 @@
+node_modules/
+OPTIMIZED/
+ziMOZB9v/
+*.bak
+*.bak2
+*.bak3
+*.bak4
+.claude/
+.DS_Store
+
