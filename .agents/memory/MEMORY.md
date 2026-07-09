@@ -1,0 +1,1 @@
+- [Headless WebGL test failures](headless-webgl-testing.md) — the quiz's top-level script needs WebGL; the Playwright testing agent has none, so button clicks look broken. Verify in a real browser first.

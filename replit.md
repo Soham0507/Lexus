@@ -1,6 +1,6 @@
-# [Project name]
+# Lexus Energy Quiz
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An interactive Lexus "Your Energy, Your Lexus" quiz experience — a WebGL-animated, iPad-oriented quiz that matches users to a Lexus vehicle. Imported from Vercel as a single self-contained static HTML file.
 
 ## Run & Operate
 
@@ -22,11 +22,14 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/lexus-energy-quiz/` — the web artifact served at `/`
+- `artifacts/lexus-energy-quiz/public/lexus_energy_quiz_tuned_v018.html` — the entire quiz experience, byte-identical to the Vercel original (all assets embedded inline). Served as a static file; the React root page redirects to it.
+- `.migration-backup/` — original imported Vercel project
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The quiz is a single self-contained HTML file (~15MB, embedded base64 assets). It is intentionally NOT converted to React — it is served untouched from `public/` to preserve pixel/behavior parity, and the root route redirects to it (same pattern the original Vercel `index.html` used).
+- The quiz's main script requires WebGL at the top level; without WebGL the whole script halts (buttons do nothing). Real browsers are fine; headless/automated browsers without GPU fail. This is pre-existing original behavior.
 
 ## Product
 
