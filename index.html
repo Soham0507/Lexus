@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lexus Energy Quiz</title>
+  </head>
+  <body>
+    <script>
+      // Simple entrypoint for Vercel SPA routing.
+      // Redirect root (/) and any rewritten paths to the real HTML file.
+      (function () {
+        const target = 'lexus_energy_quiz_tuned_v018.html';
+        // If already on the target file, do nothing.
+        if (location.pathname.endsWith('/' + target) || location.pathname === '/' + target) return;
+        // Replace so browser history stays clean.
+        location.replace(target);
+      })();
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=lexus_energy_quiz_tuned_v018.html" />
+    </noscript>
+  </body>
+</html>
+
