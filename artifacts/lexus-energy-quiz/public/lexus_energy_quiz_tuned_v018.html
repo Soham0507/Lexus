@@ -55,15 +55,8 @@
     z-index: 1;
     pointer-events: none;
   }
-  /* Each layer (shadow / wheels / body) drifts and fades into the frame
-     on its own slow, staggered delay — the shadow settles onto the
-     ground first, then the wheels rise up into it, then the body drops
-     into place last with a gentle overshoot/settle, like the car is
-     assembling itself. Once all three have physically arrived (the
-     "combined" class, added from JS after the settle window), they
-     crossfade into the single crisp flattened car image so the final
-     frame reads as one clean, seamless photo rather than three
-     alpha-blended layers. */
+  /* The flattened car image simply fades in as a whole — no separate
+     shadow/wheels/body parts animation. */
   .vehicle-car .car-layer {
     position: absolute;
     inset: 0;
@@ -71,48 +64,13 @@
     height: 100%;
     opacity: 0;
   }
-  .vehicle-car .car-layer.layer-shadow {
-    transform: scaleX(0.35) scaleY(0.5);
-    filter: blur(2px);
-    transition: opacity 1.15s ease-out, transform 1.15s ease-out, filter 1.15s ease-out;
-    transition-delay: 0s;
-  }
-  .vehicle-car .car-layer.layer-wheels {
-    transform: translateY(90px) scale(0.92);
-    transition: opacity 1.05s ease-out, transform 1.05s cubic-bezier(0.22, 1.4, 0.36, 1);
-    transition-delay: 0.55s;
-  }
-  .vehicle-car .car-layer.layer-body {
-    transform: translateY(-120px) scale(0.95);
-    filter: blur(6px);
-    transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.22, 1.4, 0.36, 1), filter 1.2s ease-out;
-    transition-delay: 1.1s;
-  }
-  .vehicle-car.visible .car-layer.layer-shadow,
-  .vehicle-car.visible .car-layer.layer-wheels,
-  .vehicle-car.visible .car-layer.layer-body {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
-  }
-  /* The flattened car image stays hidden underneath until the raw parts
-     have finished settling — then it fades in on top while the parts
-     fade out beneath it, so the swap reads as a single "polish" moment
-     rather than a cut. */
   .vehicle-car .car-layer.layer-car {
     transition: opacity 0.9s ease-in-out;
     transition-delay: 0s;
   }
-  .vehicle-car.combined .car-layer.layer-car { opacity: 1; }
-  .vehicle-car.combined .car-layer.layer-shadow,
-  .vehicle-car.combined .car-layer.layer-wheels,
-  .vehicle-car.combined .car-layer.layer-body {
-    opacity: 0;
-    transition: opacity 0.9s ease-in-out;
-    transition-delay: 0s;
-  }
+  .vehicle-car.visible .car-layer.layer-car { opacity: 1; }
   .vehicle-car.fast-fade .car-layer {
-    transition: opacity 0.45s ease-out, transform 0.45s ease-out, filter 0.45s ease-out !important;
+    transition: opacity 0.45s ease-out !important;
     transition-delay: 0s !important;
   }
 
@@ -1055,122 +1013,9 @@ button, .cta-btn, .opt-btn, .restart-btn {
   50%      { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.55)) drop-shadow(0 0 18px rgba(255,255,255,0.45)); }
 }
 
-/* Ambient light motes — soft drifting bokeh, purely decorative, sits
-   between the canvas and the UI. Visible on every screen (not just
-   start) specifically so the vehicle-tinted color actually gets seen
-   during the reveal — the tint only ever changes after the quiz
-   starts, so gating this to the start screen made the tinted version
-   of the effect structurally impossible to see. */
-.ambient-motes {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 1;
-}
-.ambient-motes span {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%);
-  filter: blur(1px);
-  animation: moteFloat linear infinite;
-}
-.ambient-motes span:nth-child(1) { width: 10px; height: 10px; left: 12%;  bottom: -5%; animation-duration: 14s; animation-delay: 0s; }
-.ambient-motes span:nth-child(2) { width: 6px;  height: 6px;  left: 78%;  bottom: -8%; animation-duration: 11s; animation-delay: 2s; }
-.ambient-motes span:nth-child(3) { width: 8px;  height: 8px;  left: 34%;  bottom: -6%; animation-duration: 16s; animation-delay: 4s; }
-.ambient-motes span:nth-child(4) { width: 5px;  height: 5px;  left: 60%;  bottom: -4%; animation-duration: 12s; animation-delay: 1s; }
-.ambient-motes span:nth-child(5) { width: 7px;  height: 7px;  left: 90%;  bottom: -7%; animation-duration: 15s; animation-delay: 6s; }
-.ambient-motes span:nth-child(6) { width: 9px;  height: 9px;  left: 20%;  bottom: -9%; animation-duration: 13s; animation-delay: 5s; }
-@keyframes moteFloat {
-  0%   { transform: translate(0, 0); opacity: 0; }
-  8%   { opacity: 0.7; }
-  90%  { opacity: 0.5; }
-  100% { transform: translate(24px, -112vh); opacity: 0; }
-}
-
-/* Reveal-moment flourish — an expanding light ring plus a handful of
-   sparks behind the car, triggered once the three raw parts have
-   combined into the crisp flattened image (JS toggles .burst-play). */
-.reveal-burst {
-  position: absolute;
-  left: 65.5%;
-  top: 54%;
-  width: 211%;
-  aspect-ratio: 1920 / 1080;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  pointer-events: none;
-}
-.reveal-burst::before {
-  content: "";
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 30%; height: 30%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%);
-  transform: translate(-50%, -50%) scale(0.4);
-  opacity: 0;
-}
-.reveal-burst.burst-play::before {
-  animation: burstRing 1.1s cubic-bezier(.22,.7,.2,1);
-}
-@keyframes burstRing {
-  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
-  25%  { opacity: 0.9; }
-  100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
-}
-.reveal-burst span {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 8px 2px rgba(255,255,255,0.85);
-  opacity: 0;
-}
-.reveal-burst.burst-play span {
-  animation: sparkOut 0.95s cubic-bezier(.16,.8,.3,1) both;
-}
-.reveal-burst span:nth-child(1) { --a: -70deg; --d: 26%; animation-delay: 0.02s; }
-.reveal-burst span:nth-child(2) { --a: -25deg; --d: 30%; animation-delay: 0.06s; }
-.reveal-burst span:nth-child(3) { --a: 20deg;  --d: 24%; animation-delay: 0.03s; }
-.reveal-burst span:nth-child(4) { --a: 65deg;  --d: 28%; animation-delay: 0.09s; }
-.reveal-burst span:nth-child(5) { --a: 145deg; --d: 27%; animation-delay: 0.05s; }
-.reveal-burst span:nth-child(6) { --a: -145deg; --d: 25%; animation-delay: 0.08s; }
-@keyframes sparkOut {
-  0%   { opacity: 0; transform: translate(-50%, -50%) rotate(var(--a)) translateX(0) scale(1); }
-  20%  { opacity: 1; }
-  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--a)) translateX(var(--d)) scale(0.4); }
-}
-
 /* ══════════════════════════════════════════════════════════════════
    ROUND 2 — vehicle-tinted ambient effects, parallax car tilt, answer
    selection feedback, progress pulse. */
-
-/* Vehicle tint: a single hue driving the ambient motes and reveal
-   burst, snapped to neutral blue (216) by default and to the winning
-   vehicle's own hue at reveal time (set via JS from BASE_COLORS).
-   @property lets the browser smoothly transition the custom property
-   itself; unsupported browsers just snap instantly instead. */
-@property --tint-h {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 216;
-}
-.device {
-  --tint-h: 216;
-  transition: --tint-h 1.2s ease;
-}
-.ambient-motes span {
-  background: radial-gradient(circle, hsla(var(--tint-h), 90%, 80%, 0.55), hsla(var(--tint-h), 90%, 80%, 0) 70%);
-}
-.reveal-burst::before {
-  background: radial-gradient(circle, hsla(var(--tint-h), 95%, 85%, 0.55), hsla(var(--tint-h), 95%, 85%, 0) 70%);
-}
-.reveal-burst span {
-  background: hsl(var(--tint-h) 95% 88%);
-  box-shadow: 0 0 8px 2px hsla(var(--tint-h), 95%, 85%, 0.85);
-}
 
 /* Parallax car tilt — .vehicle-car keeps its centering transform;
    .car-tilt (a plain wrapper around the 4 image layers) is the actual
@@ -1231,13 +1076,8 @@ button, .cta-btn, .opt-btn, .restart-btn {
 <div class="device start-state">
   <canvas id="c"></canvas>
   <canvas id="canv"></canvas>
-  <div class="ambient-motes" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <div class="reveal-burst" id="revealBurst" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div id="vehicleCar" class="vehicle-car">
     <div class="car-tilt">
-      <img class="car-layer layer-shadow" src="" alt="" />
-      <img class="car-layer layer-wheels" src="" alt="" />
-      <img class="car-layer layer-body" src="" alt="" />
       <img class="car-layer layer-car" src="" alt="" />
     </div>
   </div>
@@ -1675,8 +1515,6 @@ const VEHICLE_HUES = {
 };
 const DEFAULT_TINT_HUE = 216;
 function setDeviceTint(hue) {
-  const device = document.querySelector('.device');
-  if (device) device.style.setProperty('--tint-h', hue);
   if (window.__setSparkTint) window.__setSparkTint(hue);
 }
 
@@ -2058,34 +1896,21 @@ function answer(q, choiceText, btn) {
         // resolving color, vehicle code tag fades in at bottom-left.
         const carEl = document.getElementById('vehicleCar');
         const tagEl = document.getElementById('vehicleTag');
-        const shadowEl = carEl.querySelector('.layer-shadow');
-        const wheelsEl = carEl.querySelector('.layer-wheels');
-        const bodyEl = carEl.querySelector('.layer-body');
         const carImgEl = carEl.querySelector('.layer-car');
         tagEl.textContent = data.vehicle;
         tagEl.classList.remove('fading-out');
 
         showScreen('vehicle-reveal');
 
-        // Wait for the three raw parts AND the flattened car image to
-        // actually finish loading/decoding before starting the reveal.
-        // Without this, a large image (especially base64-embedded) can
-        // still be decoding when the animation starts, which makes it
-        // look like a layer "pops in" partway through rather than
-        // drifting/fading smoothly.
+        // Wait for the flattened car image to actually finish
+        // loading/decoding before starting the reveal. Without this, a
+        // large image (especially base64-embedded) can still be
+        // decoding when the animation starts, which makes it look like
+        // it "pops in" partway through rather than fading in smoothly.
         carEl.classList.remove('visible');
-        carEl.classList.remove('combined');
-        const burstEl = document.getElementById('revealBurst');
-        if (burstEl) burstEl.classList.remove('burst-play');
 
-        // Total time for the three parts to finish settling into place —
-        // must match the slowest layer's CSS transition-delay + duration
-        // (body: 1.1s delay + 1.2s transition = 2.3s). A short pause is
-        // added so the fully-assembled parts are visible for a beat
-        // before crisping into the flattened car image.
-        const PARTS_SETTLE_MS = 2300;
-        const PARTS_HOLD_MS = 500;
-        const CROSSFADE_MS = 900;
+        const CAR_FADE_MS = 900;
+        const HOLD_MS = 1800;
 
         const beginCarFadeIn = () => {
           requestAnimationFrame(() => {
@@ -2094,52 +1919,32 @@ function answer(q, choiceText, btn) {
               tagEl.classList.add('visible');
             });
           });
-          setTimeout(() => {
-            carEl.classList.add('combined');
-            if (burstEl) { void burstEl.offsetWidth; burstEl.classList.add('burst-play'); }
-          }, PARTS_SETTLE_MS + PARTS_HOLD_MS);
         };
 
-        const layerSrcs = [
-          [shadowEl, data.shadow],
-          [wheelsEl, data.wheels],
-          [bodyEl, data.body],
-          [carImgEl, data.car],
-        ];
-        const alreadyLoaded = layerSrcs.every(([el, src]) => el.src === src && el.complete);
-        if (alreadyLoaded) {
+        if (carImgEl.src === data.car && carImgEl.complete) {
           // Same vehicle already loaded (e.g. repeat run with same
           // winner) — safe to fade immediately.
           beginCarFadeIn();
         } else {
-          let pending = layerSrcs.length;
           let started = false;
-          const startIfReady = () => {
-            if (started) return;
-            pending -= 1;
-            if (pending <= 0) {
-              started = true;
-              beginCarFadeIn();
-            }
+          carImgEl.onload = () => {
+            carImgEl.onload = null;
+            if (!started) { started = true; beginCarFadeIn(); }
           };
-          layerSrcs.forEach(([el, src]) => {
-            el.onload = () => { el.onload = null; startIfReady(); };
-            el.src = src || '';
-          });
-          // Fallback in case an onload never fires (e.g. broken/empty
-          // src) so the sequence doesn't stall indefinitely.
+          carImgEl.src = data.car || '';
+          // Fallback in case onload never fires (e.g. broken/empty src)
+          // so the sequence doesn't stall indefinitely.
           setTimeout(() => {
             if (!started) {
               started = true;
-              layerSrcs.forEach(([el]) => { el.onload = null; });
+              carImgEl.onload = null;
               beginCarFadeIn();
             }
           }, 600);
         }
 
-        // Step 3 — hold once the car/tag are fully visible and the parts
-        // have combined into the crisp flattened image, before starting
-        // the tag fade-out.
+        // Step 3 — hold once the car/tag are fully visible, before
+        // starting the tag fade-out.
         setTimeout(() => {
           // Step 4 — tag fades out. This is its only appearance — it is
           // never shown again on the final reveal screen.
@@ -2160,7 +1965,7 @@ function answer(q, choiceText, btn) {
             document.getElementById('prog').style.width = '100%';
             showScreen('reveal');
           }, 500); // matches the tag's own fade-out transition duration
-        }, PARTS_SETTLE_MS + PARTS_HOLD_MS + CROSSFADE_MS + 1200);
+        }, CAR_FADE_MS + HOLD_MS);
       }, 800);
     }
   }, 500);
@@ -2234,10 +2039,7 @@ function restart() {
   if (carEl) {
     carEl.classList.add('fast-fade');
     carEl.classList.remove('visible');
-    carEl.classList.remove('combined');
     setTimeout(() => carEl.classList.remove('fast-fade'), 500);
-    const restartBurstEl = document.getElementById('revealBurst');
-    if (restartBurstEl) restartBurstEl.classList.remove('burst-play');
     setDeviceTint(DEFAULT_TINT_HUE);
   }
   const tagEl = document.getElementById('vehicleTag');
